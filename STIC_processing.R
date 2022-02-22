@@ -69,3 +69,19 @@ high_stic_duration <- stic_files %>%
   group_by(logger) %>% 
   summarise(n_wet = sum(wetdry == "wet", na.rm = TRUE), count = n()) %>% 
   mutate(duration = n_wet/count)
+
+
+### Calculate wet network proportion
+
+stic_wet_prop <- stic_files %>% 
+  group_by(datetime) %>% 
+  summarise(n_wet = sum(wetdry1000 == "wet"), n_sensors = n() ) %>% 
+  mutate(percent1000 = n_wet/n_sensors)
+
+
+
+
+
+
+
+

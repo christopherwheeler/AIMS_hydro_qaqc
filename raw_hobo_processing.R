@@ -8,21 +8,21 @@
 # Script works on a folder in your working directory
 # containing the raw HOBO csvs
 ########################################################
-
-# 
+getwd()
+########################################################
 library(tidyverse)
 
-hobo_logger_files <- list.files(path = "C:/Users/...")
+hobo_logger_files <- list.files(path = "C:/Users/cwhee/Desktop/R_Directory/AIMS_hydro_qaqc/konza_stics_round_2")
 
 for(csv_file in hobo_logger_files){
   
-  logger_record <- read.csv(file = paste0("C:/Users/Christopher/Desktop/R_Directory/raw_files/", csv_file),
+  logger_record <- read.csv(file = paste0("C:/Users/cwhee/Desktop/R_Directory/AIMS_hydro_qaqc/konza_stics_round_2/", csv_file),
                             skip = 1)
   
   if ("Date" %in% names(logger_record)) {
-    logger_record$datetime <- mdy_hms(paste0(logger_record$Date, " ", logger_record$Time..GMT.05.00))
+    logger_record$datetime <- lubridate::mdy_hms(paste0(logger_record$Date, " ", logger_record$Time..GMT.05.00))
   } else {
-    logger_record$datetime <- mdy_hms(logger_record$Date.Time..GMT.05.00)
+    logger_record$datetime <- lubridate::mdy_hms(logger_record$Date.Time..GMT.05.00)
   }
   
   print(paste("Read in file", csv_file, "to process."))
