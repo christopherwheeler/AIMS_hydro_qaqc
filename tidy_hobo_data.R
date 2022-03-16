@@ -18,13 +18,13 @@ tidy_hobo_data <- function(infile, outfile = FALSE) {
     dplyr::rename_with(.cols = contains("Temp"),
                        .fn = function(x){"temperature"}) %>%
     dplyr::rename_with(.cols = contains("Lux"),
-                       .fn = function(x){"measured_cond"}) %>% 
+                       .fn = function(x){"conductivity_uncal"}) %>% 
     dplyr::rename_with(.cols = contains("Date"),
                        .fn = function(x){"datetime"}) %>% 
-    dplyr::select(datetime, measured_cond, temperature) %>% 
+    dplyr::select(datetime, conductivity_uncal, temperature) %>% 
     dplyr::mutate(datetime = lubridate::mdy_hms(datetime),
                   temperature = as.numeric(temperature),
-                  measured_cond = as.numeric(measured_cond))
+                  conductivity_uncal = as.numeric(conductivity_uncal))
   
   # save data if needed
   if (outfile != FALSE) {
