@@ -1,35 +1,35 @@
-# Function for tidying the original HOBO STIC files
-#---------------------------------------------------------------------------------------------------------------
-rm(list=ls()) #clearing workspace
+# tidy_hobo_data.R
+# This function loads raw HOBO STIC files and cleans up columns and headers
+# to produce a tidy data frame and/or CSV output.
+#
+# Inputs:
+#  infile = filename (including path if needed) for the raw HOBO data on your computer.
+#  outfile = filename (including path if needed) to save the tidied. Defaults to FALSE, in which case tidied data will not be saved.
 
-library(tidyverse)
-require(tidyverse)
-
-### function above works, now trying to add if statement
-
-tidy_hobo_data <- function(filepath, outfile = FALSE) {  
+tidy_hobo_data <- function(infile, outfile = FALSE) {  
   
-  x <- read_csv(filepath, 
-                col_types = cols(.default = "c"),
-                skip = 1)
+  # read in file
+  raw_data <- read.csv(infile, 
+                       skip = 1)
   
-  x <- x %>% 
-    rename_with(.cols = contains("Temp"),
-                .fn = function(x){"temperature"}) %>%
-    rename_with(.cols = contains("Lux"),
-                .fn = function(x){"conductivity"}) %>% 
-    rename_with(.cols = contains("Date"),
-                .fn = function(x){"datetime"}) %>% 
-    select(datetime, conductivity, temperature) %>% 
-    mutate(datetime = lubridate::mdy_hms(datetime)) %>% 
-    mutate(temperature = as.numeric(temperature)) %>% 
-    mutate(conductivity = as.numeric(conductivity))
+  # tidy columns
+  tidy_data <- 
+    raw_data %>% 
+    dplyr::rename_with(.cols = contains("Temp"),
+                       .fn = function(x){"temperature"}) %>%
+    dplyr::rename_with(.cols = contains("Lux"),
+                       .fn = function(x){"measured_cond"}) %>% 
+    dplyr::rename_with(.cols = contains("Date"),
+                       .fn = function(x){"datetime"}) %>% 
+    dplyr::select(datetime, measured_cond, temperature) %>% 
+    dplyr::mutate(datetime = lubridate::mdy_hms(datetime),
+                  temperature = as.numeric(temperature),
+                  measured_cond = as.numeric(measured_cond))
   
-  if(outfile == TRUE) {
-    write_csv(x, "tidy_hobo.csv")
+  # save data if needed
+  if (outfile != FALSE) {
+    write.csv(tidy_data, outfile, row.names = FALSE)
   }
+  
+  return(tidy_data)
 }
-
-# Testing
-tidyhobo_test <- tidy_hobo_data("C:/Users/Christopher/Desktop/R_Directory/stic_package/20821662.csv", outfile = TRUE)
-
