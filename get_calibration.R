@@ -1,28 +1,21 @@
 # get_calibration.R
 # Function to fit standard and measured calibration data to model a object (lm and exponential to start)
-# inputs: standard (vector) and measured (vector) and method = "linear" or "exponential"
+# inputs: data frame with columns "standard" and "conductivity_uncal" and method = "linear" or "exponential"
+# output: fitted model object
 
-get_calibration <- function(measured, standard, method = "linear") {
+#input needs to be data frame. column names: conductivity_uncal, standard
+
+get_calibration <- function(calibration_data, method = "linear") {
   
- calibration <-  lm(standard ~ measured)
+  calibration <-  lm(standard ~ conductivity_uncal, data = calibration_data)
   
-  if(method != "linear") {
+  if(method == "exponential") {
     
-    calibration <- lm(log(standard) ~ measured)
+    calibration <- lm(log(standard) ~ conductivity_uncal, data = calibration_data)
+  } else{
+    stop("This method is unknown. Please use the linear or exponential method")
   }
- 
-   return(calibration)  
+  
+  return(calibration)  
 }
 
-
-# Testing ---------------------------------------------------------------------------------------------------------------
-
-cal_points <- read.csv("cal_points.csv")
-
-standard <- as.vector(cal_points$std_val)
-
-measured <- as.vector(cal_points$measured_val)
-
-lin_calibration <- get_calibration(measured, standard)
-
-exp_calibration <- get_calibration(measured, standard, method = "exponential")
